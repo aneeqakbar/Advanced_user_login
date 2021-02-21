@@ -21,7 +21,6 @@ def signup_view(request):
         # user = authenticate(username=username, password=password)
         user = form.save()
         user.refresh_from_db()
-        print(user.profile)
         user.profile.first_name = form.cleaned_data.get('first_name')
         user.profile.last_name = form.cleaned_data.get('last_name')
         user.profile.email = form.cleaned_data.get('email')
