@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {%if loggedin%}
+        <h1>Logged IN</h1>
+        <h1>
+            {{request.user.username}}
+        </h1>
+        <p>
+            {{request.user.first_name}}
+            {{request.user.last_name}}
+        </p>
+        <br>
+        <p>
+            {{request.user.profile.bio}}
+            {{request.user.profile.email}}
+        </p>
+        <a href="{%url 'User:logout'%}">LogOut</a>
+    {%else%}
+        <h1>Logged Out</h1>
+        <a href="{%url 'User:login'%}">Login</a>
+        <a href="{%url 'User:signup'%}">SignUp</a>
+    {%endif%}
+</body>
+</html>
