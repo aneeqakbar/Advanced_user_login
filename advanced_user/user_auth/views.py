@@ -17,6 +17,30 @@ def home_view(request):
         return render(request, 'user/index.html',{'loggedin':True})
     return render(request, 'user/index.html',{'loggedin':False})
 
+def activation_sent_view(request):
+    return render(request, 'activation_sent.html')
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None0
+    # checking if the user exists, if the token is valid.
+    if user is not None and account_activation_token.check_token(user, token):
+        # if valid set active true 
+        user.is_active = True
+        # set signup_confirmation true
+        user.profile.signup_confirmation = True
+        user.save()
+        login(request, user)
+        return HttpResponseRedirect(reverse('User:home'))
+        # return redirect('home')
+    else:
+        return render(request, 'activation_invalid.html')
+
+
 def signup_view(request):
     form = SignUpForm(request.POST)
     if form.is_valid():
@@ -45,13 +69,13 @@ def signup_view(request):
             'token': account_activation_token.make_token(user),
         })
         user.email_user(subject, message)
-        return redirect('activation_sent')
+        return HttpResponseRedirect(reverse('User:activation_sent'))
+        # return redirect('activation_sent')
         # user.save() # post_save function at models.py triggers here
         # username = form.cleaned_data.get('username')
         # password = form.cleaned_data.get('password1')
         # login(request, user)
         # user = authenticate(username=username, password=password)
-        # return HttpResponseRedirect(reverse('User:home'))
     else:
         form = SignUpForm()
         return render(request, 'user/signup.html', {'form': form})
