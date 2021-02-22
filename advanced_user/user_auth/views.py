@@ -26,7 +26,7 @@ def activate(request, uidb64, token):
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None0
+        user = None
     # checking if the user exists, if the token is valid.
     if user is not None and account_activation_token.check_token(user, token):
         # if valid set active true 
@@ -58,6 +58,7 @@ def signup_view(request):
         user.is_active = False
         user.save()
         current_site = get_current_site(request)
+        print(current_site)
         subject = 'Please Activate Your Account'
         # load a template like get_template() 
         # and calls its render() method immediately.
@@ -68,6 +69,7 @@ def signup_view(request):
             # method will generate a hash value with user related data
             'token': account_activation_token.make_token(user),
         })
+        # print(message)
         user.email_user(subject, message)
         return HttpResponseRedirect(reverse('User:activation_sent'))
         # return redirect('activation_sent')
@@ -77,7 +79,7 @@ def signup_view(request):
         # login(request, user)
         # user = authenticate(username=username, password=password)
     else:
-        form = SignUpForm()
+        # form = SignUpForm()
         return render(request, 'user/signup.html', {'form': form})
         
 def logout_view(request):
