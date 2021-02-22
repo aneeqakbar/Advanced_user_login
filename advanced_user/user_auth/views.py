@@ -25,7 +25,7 @@ def signup_view(request):
         user.profile.last_name = form.cleaned_data.get('last_name')
         user.profile.email = form.cleaned_data.get('email')
         user.profile.bio = form.cleaned_data.get('bio')
-        user.save()
+        user.save() # post_save function at models.py triggers here
         username = form.cleaned_data.get('username')
         password = form.cleaned_data.get('password1')
         login(request, user)

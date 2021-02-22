@@ -16,6 +16,5 @@ class Profile(models.Model):
 @receiver(post_save, sender=User)
 def update_profile_signal(sender, instance, created, **kwargs):
     if created:
-        print(created)
         Profile.objects.create(user=instance)
     instance.profile.save()
