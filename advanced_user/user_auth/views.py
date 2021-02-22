@@ -18,7 +18,7 @@ def home_view(request):
     return render(request, 'user/index.html',{'loggedin':False})
 
 def activation_sent_view(request):
-    return render(request, 'activation_sent.html')
+    return render(request, 'user/activation_sent.html')
 
 
 def activate(request, uidb64, token):
@@ -38,7 +38,7 @@ def activate(request, uidb64, token):
         return HttpResponseRedirect(reverse('User:home'))
         # return redirect('home')
     else:
-        return render(request, 'activation_invalid.html')
+        return render(request, 'user/activation_invalid.html')
 
 
 def signup_view(request):
@@ -61,7 +61,7 @@ def signup_view(request):
         subject = 'Please Activate Your Account'
         # load a template like get_template() 
         # and calls its render() method immediately.
-        message = render_to_string('activation_request.html', {
+        message = render_to_string('user/activation_request.html', {
             'user': user,
             'domain': current_site.domain,
             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
