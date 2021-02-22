@@ -1,11 +1,16 @@
 from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.contrib.auth import login, authenticate, logout
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_text,force_bytes
+from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
+from django.urls import reverse
+from django.db import IntegrityError
+from django.contrib.auth.models import User
 from .forms import SignUpForm
-from django.shortcuts import render, redirect
 from .models import Profile
+from .tokens import account_activation_token
+from django.template.loader import render_to_string
 
 def home_view(request):
     if request.user.is_authenticated:
@@ -25,12 +30,28 @@ def signup_view(request):
         user.profile.last_name = form.cleaned_data.get('last_name')
         user.profile.email = form.cleaned_data.get('email')
         user.profile.bio = form.cleaned_data.get('bio')
-        user.save() # post_save function at models.py triggers here
-        username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password1')
-        login(request, user)
-        user = authenticate(username=username, password=password)
-        return HttpResponseRedirect(reverse('User:home'))
+        # user can't login until link confirmed
+        user.is_active = False
+        user.save()
+        current_site = get_current_site(request)
+        subject = 'Please Activate Your Account'
+        # load a template like get_template() 
+        # and calls its render() method immediately.
+        message = render_to_string('activation_request.html', {
+            'user': user,
+            'domain': current_site.domain,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            # method will generate a hash value with user related data
+            'token': account_activation_token.make_token(user),
+        })
+        user.email_user(subject, message)
+        return redirect('activation_sent')
+        # user.save() # post_save function at models.py triggers here
+        # username = form.cleaned_data.get('username')
+        # password = form.cleaned_data.get('password1')
+        # login(request, user)
+        # user = authenticate(username=username, password=password)
+        # return HttpResponseRedirect(reverse('User:home'))
     else:
         form = SignUpForm()
         return render(request, 'user/signup.html', {'form': form})
