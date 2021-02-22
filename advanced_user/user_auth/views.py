@@ -12,6 +12,7 @@ from .models import Profile
 from .tokens import account_activation_token
 from django.template.loader import render_to_string
 
+
 def home_view(request):
     if request.user.is_authenticated:
         return render(request, 'user/index.html',{'loggedin':True})

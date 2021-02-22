@@ -49,7 +49,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ROOT_URLCONF = 'advanced_user.urls'
 
 TEMPLATES = [
@@ -119,3 +118,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_HOST = 'v=spf1 include:1334971b3.ppspf.net ~all'
+# EMAIL_HOST_USER = 'aneeqakbqr'
+# EMAIL_HOST_PASSWORD = 'Keepitup14'
